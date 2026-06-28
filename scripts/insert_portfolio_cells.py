@@ -94,7 +94,13 @@ import shap
 # Sample for speed; use DataFrame so feature names flow to plots
 X_sample = X_test.iloc[:800] if hasattr(X_test, "iloc") else X_test
 
-explainer = shap.TreeExplainer(decision_classifier)
+# SHAP TreeExplainer requires the base tree model, not a CalibratedClassifierCV wrapper
+shap_model = decision_classifier
+if hasattr(decision_classifier, 'calibrated_classifiers_'):
+    # Extract base estimator from CalibratedClassifierCV
+    shap_model = decision_classifier.calibrated_classifiers_[0].estimator
+
+explainer = shap.TreeExplainer(shap_model)
 
 # Prefer new SHAP API (callable explainer); fall back to shap_values for older versions
 try:
