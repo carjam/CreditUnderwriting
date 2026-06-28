@@ -18,9 +18,14 @@ def test_default_policy_config_parses() -> None:
         near_cut=float(raw["near_cut"]),
         avg_loan_amount=float(raw["avg_loan_amount"]),
         lgd=float(raw["lgd"]),
+        tenor_months=int(raw.get("tenor_months", 36)),
+        revenue_per_loan=float(raw.get("revenue_per_loan", 3000.0)),
     )
     assert 0.0 < policy.review_min < policy.approve_min < 1.0
     assert 0.0 < policy.near_cut < policy.prime_cut < 1.0
+    assert policy.tenor_months > 0
+    assert policy.revenue_per_loan > 0.0
+    assert 0.0 < policy.lgd < 1.0
 
 
 def test_apply_policy_outputs_expected_columns() -> None:
